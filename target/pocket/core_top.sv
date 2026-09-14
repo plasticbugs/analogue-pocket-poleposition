@@ -632,13 +632,22 @@ module core_top
     //! ------------------------------------------------------------------------
     wire [AUDIO_DW-1:0] core_snd_l, core_snd_r; // Audio Mono/Left/Right
 
+    //! Cabinet: the Cabinet Reverb level also darkens the output, as the
+    //! speaker box would -- the platform's second-order low-pass presets,
+    //! measured at the Pocket's 6.144 MHz filter rate (sim/tb_cabfilter.cpp):
+    //! Off keeps the default (-3 dB at ~18 kHz), Light -3 dB at 7.0 kHz,
+    //! Medium 5.2 kHz, Heavy 3.45 kHz.
+    wire [3:0] cab_filter = (mod_sw1[7:6] == 2'd1) ? 4'd8 :
+                            (mod_sw1[7:6] == 2'd2) ? 4'd6 :
+                            (mod_sw1[7:6] == 2'd3) ? 4'd4 : 4'd0;
+
     audio_mixer #(.DW(AUDIO_DW),.STEREO(STEREO)) pocket_audio_mixer
     (
         // Clocks and Reset
         .clk_74b    ( clk_74b    ),
         .reset      ( reset_sw   ),
         // Controls
-        .afilter_sw ( afilter_sw ),
+        .afilter_sw ( cab_filter ),
         .vol_att    ( vol_att    ),
         .mix        ( AUDIO_MIX  ),
         .pause_core ( pause_core ),
@@ -871,24 +880,17 @@ module core_top
     //!   B (or L)           brake            Select / Start   coin
     //! ------------------------------------------------------------------
 
-    //! Wheel: a free-running 8-bit position, like MAME's dial. Holding a
-    //! direction turns it 2 counts a frame, 4 after half a second, which the
-    //! 53xx reads as a stream of one-count steps.
+    //! Wheel: a free-running 8-bit position, like MAME's dial, turned by the
+    //! D-pad or proportionally by a dock controller's analog stick
+    //! (target/pocket/pp_steer.sv). Menu: Steering Sensitivity, 0xF2000000
+    //! bits 9:8 (0 Medium, 1 Low, 2 High).
     logic [7:0] steer_pos;
-    logic [5:0] steer_held;
-    always_ff @(posedge clk_sys) begin
-        if (pp_reset) begin
-            steer_pos <= 8'd0; steer_held <= 6'd0;
-        end else if (frame_tick) begin
-            if (m_left ^ m_right) begin
-                if (!(&steer_held)) steer_held <= steer_held + 6'd1;
-                steer_pos <= steer_pos + (m_right ? (steer_held[5] ? 8'd4 : 8'd2)
-                                                  : (steer_held[5] ? -8'd4 : -8'd2));
-            end else begin
-                steer_held <= 6'd0;
-            end
-        end
-    end
+    pp_steer pocket_steer (
+        .clk(clk_sys), .reset(pp_reset), .frame_tick(frame_tick),
+        .sens(mod_sw1[1:0]),
+        .left(m_left), .right(m_right),
+        .stick_active(j1_left | j1_right), .stick_lx(j1_lx), .stick_rx(j1_rx),
+        .pos(steer_pos));
 
     //! Pedals: 0x00 up to 0x90 floored, moving 16 a frame either way -- the
     //! same travel MAME gives a keyboard-driven pedal.

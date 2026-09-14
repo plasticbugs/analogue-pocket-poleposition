@@ -70,6 +70,30 @@
         ]
       },
       {
+        "name": "Steering Sensitivity",
+        "id": 48,
+        "type": "list",
+        "enabled": true,
+        "persist": true,
+        "address": "0xF2000000",
+        "defaultval": 1,
+        "mask": "0xFFFFFCFF",
+        "options": [
+          {
+            "name": "Low",
+            "value": "0x00000100"
+          },
+          {
+            "name": "Medium",
+            "value": "0x00000000"
+          },
+          {
+            "name": "High",
+            "value": "0x00000200"
+          }
+        ]
+      },
+      {
         "name": "Game Time",
         "id": 30,
         "type": "list",

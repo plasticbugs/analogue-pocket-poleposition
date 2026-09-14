@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
-"""Generate the Pocket artwork: the 36x36 core icon and the 521x165 platform
-banner, raw 16-bit, five bits per gun with the top bit unused.
+"""Generate the Pocket's 36x36 core icon (and, on request, a placeholder
+platform banner).
 
-Drawn in greys on purpose: Analogue documents the pixel format as BGRA5551 but
-the field order only shows up on hardware, and with r == g == b the two
-candidate orders are indistinguishable. Colour can come once that is confirmed.
+The Pocket's image format: 2 bytes a pixel, a brightness byte then a zero byte,
+stored rotated -- a W x H picture is written as H columns of W rows, the
+picture's rightmost column first, each from top to bottom. That is how the
+supplied platform image (pkg/pocket/Platforms/_images/poleposition.bin, the
+cabinet marquee) and the Atari System 2 core's images are laid out. The first
+version of this tool guessed BGRA5551 with no rotation instead.
 
 Nothing here is taken from the game's ROMs.
 
-    tools/make_images.py          writes into pkg/pocket/
+    tools/make_images.py                   writes the icon into pkg/pocket/
+    tools/make_images.py --banner out.bin  also draws a placeholder banner --
+                                           never over the shipped one
 """
-import os, struct
+import os
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 
@@ -34,9 +39,9 @@ FONT = {
 }
 
 
-def pack(rgb5):
+def brightness(rgb5):
     r, g, b = rgb5
-    return struct.pack('<H', (r << 10) | (g << 5) | b)
+    return (r + g + b) * 255 // 93
 
 
 class Img:
@@ -62,9 +67,12 @@ class Img:
         return cx
 
     def save(self, path):
+        out = bytearray()
+        for col in range(self.w - 1, -1, -1):      # rightmost column first
+            for row in range(self.h):
+                out += bytes((brightness(self.px[row * self.w + col]), 0))
         with open(path, 'wb') as f:
-            for c in self.px:
-                f.write(pack(c))
+            f.write(out)
 
 
 W = (31, 31, 31)
@@ -107,29 +115,34 @@ def car(img, x, y, s):
 
 
 def main():
+    import sys
     core = os.path.join(ROOT, 'pkg', 'pocket', 'Cores', 'plasticbugs.poleposition')
-    plats = os.path.join(ROOT, 'pkg', 'pocket', 'Platforms', '_images')
     os.makedirs(core, exist_ok=True)
-    os.makedirs(plats, exist_ok=True)
 
     icon = Img(36, 36, K)
     icon.rect(0, 12, 36, 13, G)                 # horizon
     road(icon, 0, 36, 13, 36, 18)
     car(icon, 14, 24, 1)
     icon.save(os.path.join(core, 'icon.bin'))
+    written = [os.path.join(core, 'icon.bin')]
 
-    ban = Img(521, 165, K)
-    for y in range(60):
-        v = 1 + (y * 4) // 60
-        ban.rect(0, y, 521, y + 1, (v, v, v))
-    ban.rect(0, 60, 521, 61, G)
-    road(ban, 0, 300, 61, 165, 120)
-    car(ban, 96, 110, 6)
-    ban.text(300, 40, 'POLE', W, scale=6, spacing=1)
-    ban.text(300, 88, 'POSITION', W, scale=4, spacing=1)
-    ban.text(300, 130, 'NAMCO 1982', G, scale=2, spacing=1)
-    ban.save(os.path.join(plats, 'poleposition.bin'))
-    for p in (os.path.join(core, 'icon.bin'), os.path.join(plats, 'poleposition.bin')):
+    if '--banner' in sys.argv:
+        out = sys.argv[sys.argv.index('--banner') + 1]
+        if os.path.abspath(out).endswith(os.path.join('_images', 'poleposition.bin')):
+            sys.exit('refusing to overwrite the shipped platform image')
+        ban = Img(521, 165, K)
+        for y in range(60):
+            v = 1 + (y * 4) // 60
+            ban.rect(0, y, 521, y + 1, (v, v, v))
+        ban.rect(0, 60, 521, 61, G)
+        road(ban, 0, 300, 61, 165, 120)
+        car(ban, 96, 110, 6)
+        ban.text(300, 40, 'POLE', W, scale=6, spacing=1)
+        ban.text(300, 88, 'POSITION', W, scale=4, spacing=1)
+        ban.text(300, 130, 'NAMCO 1982', G, scale=2, spacing=1)
+        ban.save(out)
+        written.append(out)
+    for p in written:
         print('wrote', os.path.relpath(p, ROOT), os.path.getsize(p), 'bytes')
 
 

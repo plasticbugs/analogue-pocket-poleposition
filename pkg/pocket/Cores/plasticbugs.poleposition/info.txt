@@ -24,8 +24,13 @@ Using pupdate or the mra tool? Point
 it at polepos.mra.
 
 Controls
-* Steer: D-pad left / right
+* Steer: D-pad left / right, or a
+  dock controller's analog stick
 * Accelerate: A (or R)
 * Brake: B (or L)
 * Gear: X or Y toggles, up HI, down LO
 * Insert coin: Select or Start
+
+Menu: DIP switches, service mode,
+Screen Shape, Cabinet Reverb and
+Steering Sensitivity.

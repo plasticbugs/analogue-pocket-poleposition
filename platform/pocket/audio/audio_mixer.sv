@@ -80,34 +80,38 @@ module audio_mixer
 
     //! ------------------------------------------------------------------------
     //! Low Pass Filter
+    //! Pole Position: the preset table is live, so afilter_sw picks the filter
+    //! (0 = the framework's default ~18 kHz anti-imaging low-pass). The core
+    //! drives it from the Cabinet Reverb level to add the speaker box's
+    //! high-frequency loss. afilter_sw arrives from another clock domain and
+    //! changes only from the menu, so two flops bring it across; a select that
+    //! passes through an intermediate value for a clock is still a stable
+    //! preset.
     //! ------------------------------------------------------------------------
-    reg [31:0] aflt_rate =  32'd7056000; // Sampling Frequency
-    reg [39:0] acx       =  40'd4258969; // Base gain
-    reg  [7:0] acx0      =   8'd3;       // gain scale for X0
-    reg  [7:0] acx1      =   8'd3;       // gain scale for X1
-    reg  [7:0] acx2      =   8'd1;       // gain scale for X2
-    reg [23:0] acy0      = -24'd6216759; // gain scale for Y0
-    reg [23:0] acy1      =  24'd6143386; // gain scale for Y1
-    reg [23:0] acy2      = -24'd2023767; // gain scale for Y2
+    logic [3:0] afilter_s1 = 4'd0, afilter_s2 = 4'd0;
+    always_ff @(posedge audio_mclk) begin
+        afilter_s1 <= afilter_sw;
+        afilter_s2 <= afilter_s1;
+    end
 
-    // logic [31:0] aflt_rate;
-    // logic [39:0] acx;
-    // logic  [7:0] acx0, acx1, acx2;
-    // logic [23:0] acy0, acy1, acy2;
+    logic [31:0] aflt_rate;
+    logic [39:0] acx;
+    logic  [7:0] acx0, acx1, acx2;
+    logic [23:0] acy0, acy1, acy2;
 
-    // arcade_filters arcade_filters
-    //                (
-    //                    .clk        ( audio_mclk ),
-    //                    .afilter_sw ( afilter_sw ),
-    //                    .aflt_rate  ( aflt_rate  ),
-    //                    .acx        ( acx        ),
-    //                    .acx0       ( acx0       ),
-    //                    .acx1       ( acx1       ),
-    //                    .acx2       ( acx2       ),
-    //                    .acy0       ( acy0       ),
-    //                    .acy1       ( acy1       ),
-    //                    .acy2       ( acy2       )
-    //                );
+    arcade_filters arcade_filters
+                   (
+                       .clk        ( audio_mclk ),
+                       .afilter_sw ( afilter_s2 ),
+                       .flt_rate   ( aflt_rate  ),
+                       .cx         ( acx        ),
+                       .cx0        ( acx0       ),
+                       .cx1        ( acx1       ),
+                       .cx2        ( acx2       ),
+                       .cy0        ( acy0       ),
+                       .cy1        ( acy1       ),
+                       .cy2        ( acy2       )
+                   );
 
     //! ------------------------------------------------------------------------
     //! Audio Filters

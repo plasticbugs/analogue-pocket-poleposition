@@ -46,15 +46,21 @@ There is no start button: insert a coin and press the accelerator.
 
 | | |
 |---|---|
-| Steer | D-pad left / right |
+| Steer | D-pad left / right, or a dock controller's analog stick |
 | Accelerate | A (or R) |
 | Brake | B (or L) |
 | Gear | X or Y toggles; D-pad up = HI, down = LO |
 | Insert coin | Select or Start |
 
+The cabinet's wheel is an optical encoder — the game responds to how fast it
+turns — so the D-pad turns it at a steady rate that doubles after half a second
+held, and an analog stick turns it faster the further it is pushed.
+**Steering Sensitivity** (Low, Medium, High) scales both; Medium is the
+default.
+
 DIP switches — game time, laps, coinage, practice and extended rank, mph or
 km/h, demo sounds — and service mode are in the Pocket's Interact menu, along
-with the screen shape and cabinet reverb.
+with the screen shape, cabinet reverb and steering sensitivity.
 
 ## The screen
 
@@ -70,8 +76,10 @@ way the board mixes them — through the wave synthesiser's volume controls —
 rather than the way MAME does, which plays them about 20 dB too loud; see
 `docs/sound.md`.
 
-**Cabinet Reverb** (Off, Light, Medium, Heavy) adds a short, dark room around
-the whole mix. It is not part of the original hardware, and is off by default.
+**Cabinet Reverb** (Off, Light, Medium, Heavy) puts the sound back in a
+cabinet: a short, dark room around the whole mix, and a low-pass that closes in
+with each step (−3 dB at 7 kHz, 5.2 kHz, 3.5 kHz) for the boxed-in speakers.
+It is not part of the original hardware, and is off by default.
 
 ## How it is verified
 

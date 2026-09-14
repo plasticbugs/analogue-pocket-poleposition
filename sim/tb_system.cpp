@@ -1,6 +1,6 @@
 // Full-system bench: the whole machine on the real CPUs.
 //
-//   tb_system <polepos.rom> <frames> <out.ppm> [-ram out.txt] [-script attract|play]
+//   tb_system <polepos.rom> <frames> <out.ppm> [-ram out.txt] [-script attract|play|steer]
 //              [-trace trace.txt] [-dump N,N,... -dumpdir DIR]
 //              [-z80log file -z80from F -z80to F]   Z80 fetches and I/O reads
 //              [-events file -evto F]   handshake events with time in lines
@@ -46,6 +46,17 @@ static Inputs schedule(const std::string &script, int frame) {
             int phase = (frame / 90) % 4;
             in.steer = (phase == 1) ? (frame * 3) & 0xff : (phase == 3) ? (-frame * 3) & 0xff : 0;
         }
+    }
+    if (script == "steer") {
+        // a race, then the wheel turned at the Pocket's fastest rates and let
+        // go, to see whether the 53xx keeps up (PP_STEERLOG=1 prints it)
+        static unsigned pos = 0;
+        in.coin = frame >= 600 && frame < 606;
+        in.accel = frame >= 700 ? 0x90 : 0;
+        if (frame > 900 && frame <= 1020) pos += 6;          // High, held
+        if (frame > 1080 && frame <= 1200) pos -= 4;         // Medium, held
+        if (frame > 1260 && frame <= 1380) pos += 2;         // Medium, first half second
+        in.steer = pos & 0xff;
     }
     return in;
 }
@@ -194,6 +205,12 @@ int main(int argc, char **argv) {
             // start of row 240, the instant MAME's frame_done runs (frame N
             // at N x 264 lines of emulated time; the raster starts at row 240)
             frame++;
+            // PP_STEERLOG=1: the steering encoder's backlog each frame (counts
+            // of wheel movement the 53xx has not yet polled out, x2)
+            static const bool steerlog = getenv("PP_STEERLOG") != nullptr;
+            if (steerlog)
+                printf("steer frame %d pos %u backlog %d\n", frame, (unsigned)top->steer_pos,
+                       (int)(int16_t)top->rootp->polepos_core->u_customs__DOT__steer_accum);
             Inputs in = schedule(script, frame);
             in0 = 0xff;
             if (in.coin) in0 &= ~0x10;

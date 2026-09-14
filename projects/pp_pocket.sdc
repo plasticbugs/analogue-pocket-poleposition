@@ -44,11 +44,10 @@ set_clock_groups -asynchronous \
 # ==============================================================================
 # Z80 multicycle.
 #
-# Both Z80s advance only on a clock enable: the main CPU every 16 clk_sys
-# cycles (49.152 / 16 = 3.072 MHz exactly) and the sound CPU at worst every 27
-# (a phase accumulator averaging 1.789772 MHz). Every register-to-register path
-# *inside* tv80_core therefore has at least 16 clock periods to settle, and
-# tv80's microcode decode is the widest combinational block in the design.
+# The Z80 advances only on a clock enable, every 16 clk_sys cycles
+# (49.152 / 16 = 3.072 MHz exactly), and every register in tv80_core and
+# tv80_reg is gated by it. Every register-to-register path *inside* tv80_core
+# therefore has 16 clock periods to settle.
 #
 # Deliberately scoped to paths that both start and end inside the CPU: the
 # address and data buses run to block RAM ports that are clocked every cycle,
@@ -59,3 +58,20 @@ set_clock_groups -asynchronous \
 # ==============================================================================
 set_multicycle_path -setup 8 -from [get_registers {*|tv80_core:*|*}] -to [get_registers {*|tv80_core:*|*}]
 set_multicycle_path -hold  7 -from [get_registers {*|tv80_core:*|*}] -to [get_registers {*|tv80_core:*|*}]
+
+# ==============================================================================
+# Hold margin for the fitter only.
+#
+# 50 ps more hold than sign-off requires on the machine clock, asked of the
+# fitter alone: at 97% logic its estimate and quartus_sta's can differ by a few
+# ps on one-hop paths into DSP and RAM blocks, whose clocks arrive late. The
+# condition keeps the margin out of quartus_sta, so the timing report shows the
+# real slack. (The 4 ps miss that prompted it was a Z8002 multiplier operand
+# duplicated into DSP input registers, which no padding reached; `preserve` on
+# those registers in rtl/z8002.sv removed that path.)
+# ==============================================================================
+if {[string equal $::quartus(nameofexecutable) "quartus_fit"]} {
+    set_clock_uncertainty -add -hold 0.050 \
+        -from [get_clocks {ic|core_pll|core_pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk}] \
+        -to   [get_clocks {ic|core_pll|core_pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk}]
+}

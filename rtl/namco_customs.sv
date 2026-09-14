@@ -140,7 +140,7 @@ module namco_customs (
     // polepos_state::steering_changed_r (runs on every R0 read) and steering_delta_r
     logic [7:0]         steer_last  = '0;
     logic               steer_delta = 1'b0;
-    logic signed [15:0] steer_accum = '0;
+    logic signed [15:0] steer_accum /* verilator public_flat_rd */ = '0;
     logic signed [15:0] acc_add, acc_next;
     logic               delta_next;
     logic [7:0]         steer_diff;

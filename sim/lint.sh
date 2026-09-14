@@ -48,7 +48,7 @@ verilator --lint-only $FLAGS -Wno-PINMISSING --top-module core_top -Irtl -Imodul
     -y platform/pocket -y platform/pocket/interface -y platform/pocket/memory \
     -y platform/pocket/video -y platform/pocket/audio -y platform/pocket/helpers \
     -y platform/pocket/peripherals -y platform/pocket/support \
-    $RTL target/pocket/core_top.sv > "$out2" 2>&1
+    $RTL target/pocket/pp_steer.sv target/pocket/core_top.sv > "$out2" 2>&1
 set -e
 top=$(grep -E '^%(Warning|Error)' "$out2" | grep -E ': *target/pocket/' \
       | grep -v 'Cannot find file containing module' || true)

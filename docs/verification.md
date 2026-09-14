@@ -170,16 +170,33 @@ Quartus 18.1, 5CEBA4F23C8, full compile of the Pocket core:
 
 | resource | used | available |
 |---|---|---|
-| Logic (ALMs) | 17,908 | 18,480 (97%) |
-| Registers | 10,709 | |
+| Logic (ALMs) | 17,894 | 18,480 (97%) |
+| Registers | 10,773 | |
 | Block memory | 1,894,308 bits | 3,153,920 (60%) |
 | RAM blocks | 250 | 308 (81%) |
-| DSP blocks | 33 | 66 (50%) |
+| DSP blocks | 35 | 66 (53%) |
 
-Timing closes on every clock and corner: worst setup slack +0.562 ns on the
-49.152 MHz system clock (slow 85C), worst hold +0.097 ns. The first compile
+Timing closes on every clock and corner: worst setup slack +0.924 ns on the
+49.152 MHz system clock (slow 85C), worst hold +0.118 ns. The first compile
 missed by 1.04 ns; the three Z8002 paths responsible and their fixes are in
 `docs/z8002.md` §6, each re-verified in lockstep with MAME before recompiling.
+
+Two things found later, both in how the constraints reach the tools:
+
+* **The core's SDC was being ignored.** The project listed `pp_pocket.sdc`
+  before the platform's `sys_constr.sdc`, which creates the PLL clocks, so
+  every clock group, the Z80 multicycle and anything else naming a clock in
+  `pp_pocket.sdc` was dropped with a "could not be matched with a clock"
+  warning, in the fitter and in sign-off alike. Timing had closed without
+  them. The order is fixed; the log now warns only about the two PLL outputs
+  the core does not use.
+* **A 4 ps hold miss at the fast 0C corner** appeared once logic reached 97%:
+  the fitter duplicated a Z8002 multiplier operand register (`m_b`) into the
+  input registers of the DSP blocks the 33 x 33 product spans, and the DSP
+  clock's ~0.5 ns later arrival left the one-hop path from `ta` short. Neither
+  all-path hold fixing (already the default) nor extra fitter-only hold margin
+  reached it; `(* preserve *)` on `m_a`/`m_b` keeps them fabric flops, and the
+  miss is gone.
 
 The biggest consumers are the two Z8002s (~4,850 ALMs each), the sound board
 (~2,860, of which the mixer's own logic is ~880 and the WSG ~740), the four
@@ -190,9 +207,33 @@ single datapath; the reverb's three combs could share one adder chain; and the
 routed channels could replace the waveform sample inside the WSG's own voice
 loop (which is what the 4051 does) instead of adding 20 steps to the mixer.
 
+## 7a. Controls — `sim/run_steer.sh`
+
+`target/pocket/pp_steer.sv` turns the wheel from the D-pad or a dock
+controller's analog stick; the bench holds it to:
+
+| check | result |
+|---|---|
+| D-pad at Medium, 4,000 frames of random presses and holds | identical, frame by frame, to the steering the core first shipped with |
+| D-pad Low / Medium / High: counts in the first 32 frames held, then per 10 frames | 32/20, 64/40, 96/60 (1, 2, 3 a frame, doubling after half a second) |
+| stick at full lock, Low / Medium / High | 2.003 / 4.007 / 6.015 counts a frame (want 2, 4, 6) |
+| stick half way and just past the dead zone, Medium | 1.985 and 0.180 counts a frame (want 1.982 and 0.180) |
+| stick full left; right stick; inside the dead zone | -4.007; -4.007; 0 |
+
+Whether the machine keeps up with the fastest setting: the 53xx consumes one
+unit of wheel movement per poll, so a wheel turned faster than it polls would
+leave a backlog that keeps steering after release. `tb_system -script steer`
+(with `PP_STEERLOG=1`) turns the wheel at 6 counts a frame for two seconds, then
+4, then 2, mid-race: the encoder's backlog is zero at the end of every one of
+the 1,420 frames.
+
 ## 8. What still needs a Pocket
 
 * Screen shape and the scaler's aspect handling (two presets in the menu).
-* Artwork colour order (drawn in greys until confirmed).
-* Controls feel: steering rate and pedal travel are synthesised from the pad.
+* ~~Artwork format~~: settled. The platform image is the cabinet marquee,
+  supplied in the Pocket's documented format (a brightness byte and a zero byte
+  per pixel, stored rotated); `tools/make_images.py` draws the core icon in the
+  same layout, checked by re-encoding the marquee byte for byte.
+* Controls feel: steering rate and pedal travel are synthesised from the pad;
+  the analog stick path has been benched but not tried on a dock controller.
 * The watchdog and video overrun flags on real hardware.

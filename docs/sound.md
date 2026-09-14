@@ -172,7 +172,7 @@ MAME's `-wavwrite` is taken **before** its speaker effect chain (`output_push`
 copies the speaker's input stream into the record buffer), so its recordings
 keep that offset; every comparison below is DC-removed.
 
-### Cabinet reverb (Pocket option)
+### Cabinet reverb and speaker box (Pocket option)
 
 `rtl/pp_reverb.sv`, after the fold, is not the board: Punch-Out!!'s three
 damped comb filters (29.7, 37.1, 41.1 ms) fed the mid signal, with one wet tail
@@ -180,6 +180,25 @@ under both channels so the stereo image is kept. Off by default; Light,
 Medium and Heavy in the Interact menu. `sim/tb_reverb.cpp` checks the dry path
 is untouched with it off, the first echo lands on the 1,426th sample, the tail
 is identical left and right and a full-scale square stays bounded.
+
+Each reverb level also closes the output down, the way the speakers in a
+wooden cabinet lose the top end. That reuses the Pocket framework's own output
+IIR (`platform/pocket/audio`), whose preset table was compiled in but unused:
+`core_top.sv` selects its second-order "8k", "6k" and "4k" low-passes for
+Light, Medium and Heavy and the framework default for Off. The presets were
+designed for a 7.056 MHz filter rate but run at 6.144 MHz on the Pocket, so
+their real corners are lower than their names. `sim/run_cabfilter.sh` measures
+them on the framework RTL at the Pocket's audio clock (dB relative to 1 kHz):
+
+| level | 3 kHz | 5 kHz | 8 kHz | 10 kHz | level at 1 kHz |
+|---|---|---|---|---|---|
+| Off | -0.1 | -0.2 | -0.5 | -0.8 | -0.24 dB |
+| Light | -0.2 | -1.2 | -4.9 | -8.0 | -1.69 dB |
+| Medium | -0.5 | -2.9 | -8.7 | -12.5 | -1.59 dB |
+| Heavy | -2.1 | -7.5 | -15.2 | -19.3 | -1.54 dB |
+
+The presets lose about 1.4 dB of level against Off, which the reverb's wet
+signal roughly makes back.
 
 ## How MAME records this machine
 

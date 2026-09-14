@@ -50,6 +50,13 @@ set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
 set_global_assignment -name ROUTER_CLOCKING_TOPOLOGY_ANALYSIS ON
 set_global_assignment -name ROUTER_LCELL_INSERTION_AND_LOGIC_DUPLICATION ON
+# Hold is fixed on every path, across corners. These are this Quartus's
+# defaults for the device (the fit report lists them so), stated here because
+# the design depends on them: at 97% a 4 ps core-internal hold miss appeared at
+# the fast 0C corner, and the fitter's extra hold margin in pp_pocket.sdc only
+# works with these on.
+set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
 
 # ==============================================================================
 # Pin & Location Assignments
@@ -60,7 +67,6 @@ set_global_assignment -name SOURCE_TCL_SCRIPT_FILE ../platform/pocket/bsp/pocket
 # Platform Modules, Constrains and Chain Description File
 # ==============================================================================
 set_global_assignment -name QIP_FILE pp_pocket.qip
-set_global_assignment -name SDC_FILE pp_pocket.sdc
 set_global_assignment -name CDF_FILE pp_pocket.cdf
 
 # ==============================================================================
@@ -338,6 +344,10 @@ set_global_assignment -name SOURCE_FILE ../platform/pocket/bsp/pocket/sys_assign
 set_global_assignment -name SOURCE_FILE ../platform/pocket/bsp/setup.tcl
 set_global_assignment -name SYSTEMVERILOG_FILE ../platform/pocket/bsp/pocket/apf_top.sv
 set_global_assignment -name SDC_FILE ../platform/pocket/bsp/pocket/sys_constr.sdc
+# The core's constraints name the PLL clocks sys_constr.sdc creates, so they
+# must be read after it: listed first, every clock group, multicycle and
+# uncertainty in pp_pocket.sdc was ignored ("could not be matched with a clock").
+set_global_assignment -name SDC_FILE pp_pocket.sdc
 set_global_assignment -name SOURCE_FILE ../platform/pocket/pkgIndex.tcl
 set_global_assignment -name SYSTEMVERILOG_FILE ../platform/pocket/audio/pocket_i2s.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../platform/pocket/audio/audio_mixer.sv

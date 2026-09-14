@@ -118,7 +118,12 @@ module z8002 (
     logic [3:0]  lcnt = '0;          // LDM word count
     logic [2:0]  ikind = '0;         // interrupt being serviced
     logic [6:0]  iter = '0;
-    logic signed [32:0] m_a = '0, m_b = '0;
+    // The operands stay fabric flops: 33 x 33 spans several DSP blocks, and the
+    // fitter otherwise duplicates them into each block's input registers, whose
+    // clock arrives ~0.5 ns late -- a one-hop ta -> m_b~_Duplicate path it then
+    // left 4 ps short of hold at the fast 0C corner. preserve stops duplication.
+    (* preserve *) logic signed [32:0] m_a = '0;
+    (* preserve *) logic signed [32:0] m_b = '0;
     logic signed [65:0] m_p = '0;
     logic [63:0] dq = '0;            // division dividend / quotient shift register
     logic [32:0] drem = '0;          // division partial remainder
