@@ -1,0 +1,96 @@
+<misterromdescription>
+    <name>Pole Position (World)</name>
+    <setname>polepos</setname>
+    <year>1982</year>
+    <manufacturer>Namco</manufacturer>
+    <category>Arcade</category>
+    <rbf>polepos</rbf>
+
+    <!-- Flat 8-bit image, one part after another with no padding. The Z8002
+         program ROMs stay as the separate even/odd byte chips they are on the
+         board (the core reads both halves of a word in parallel), so nothing
+         needs interleaving. The big-sprite ROMs are packed: MAME's region has
+         empty 8K holes at 0x6000 and 0xE000 that the core does not store.
+
+           0x00000  12288  Z80 program              pp3_9.6h pp1_10b.5h
+           0x03000   8192  Z8002 #1 even bytes      pp3_2.8l
+           0x05000   8192  Z8002 #1 odd bytes       pp3_1.8m
+           0x07000   8192  Z8002 #2 even bytes      pp3_6.4l
+           0x09000   8192  Z8002 #2 odd bytes       pp3_5.4m
+           0x0B000   4096  alpha characters         pp3_28.1f
+           0x0C000   4096  background tiles         pp1_29.1e
+           0x0D000  16384  16x16 sprites            pp3_25.1n pp3_26.1m
+           0x11000  49152  32x32 sprites            pp1_17 19 21 (planes 0+1) 18 20 22 (planes 2+3)
+           0x1D000  20480  road                     pp1_30.3a pp1_31.2a pp1_32.1a
+           0x22000   4096  sprite vertical scaling  pp1_27.1l
+           0x23000   4096  51xx 52xx 53xx 54xx MCU programs
+           0x24000  16384  engine sound             pp1_15.6a pp1_16.5a
+           0x28000  24576  52xx voice samples       pp2_11.2e pp2_12.2f pp2_13.1e
+           0x2E000    256  palette red              pp1-7.8l
+           0x2E100    256  palette green            pp1-8.9l
+           0x2E200    256  palette blue             pp1-9.10l
+           0x2E300    256  alpha colour lookup      pp2-10.2h
+           0x2E400    256  background colour lookup pp1-11.4d
+           0x2E500    256  road vertical position   pp1-15.9a  (low nibble)
+           0x2E600    256  road vertical position   pp1-16.10a (middle)
+           0x2E700    256  road vertical position   pp1-17.11a (high)
+           0x2E800   1024  road colour lookup       pp1-12.3c
+           0x2EC00   1024  sprite colour lookup     pp3-6.6m
+           0x2F000    256  WSG waveforms            pp1-5.3b
+           0x2F100        total (192,768 bytes)
+    -->
+    <rom index="0" zip="polepos.zip" md5="27d902cee8852f5ea9727075612febff">
+        <!-- Z80 -->
+        <part name="pp3_9.6h"   crc="c0511173"/>
+        <part name="pp1_10b.5h" crc="7174bcb7"/>
+        <!-- Z8002 #1 -->
+        <part name="pp3_2.8l"   crc="fafb9049"/>
+        <part name="pp3_1.8m"   crc="65c1c2c2"/>
+        <!-- Z8002 #2 -->
+        <part name="pp3_6.4l"   crc="acc1ebc3"/>
+        <part name="pp3_5.4m"   crc="46e5c99a"/>
+        <!-- characters and tiles -->
+        <part name="pp3_28.1f"  crc="2e77187e"/>
+        <part name="pp1_29.1e"  crc="706e888a"/>
+        <!-- small sprites -->
+        <part name="pp3_25.1n"  crc="b52c086b"/>
+        <part name="pp3_26.1m"  crc="d24a5707"/>
+        <!-- big sprites -->
+        <part name="pp1_17.5n"  crc="2e134b46"/>
+        <part name="pp1_19.4n"  crc="43ff83e1"/>
+        <part name="pp1_21.3n"  crc="5f958eb4"/>
+        <part name="pp1_18.5m"  crc="6f9997d2"/>
+        <part name="pp1_20.4m"  crc="ec18075b"/>
+        <part name="pp1_22.3m"  crc="1d2f30b1"/>
+        <!-- road -->
+        <part name="pp1_30.3a"  crc="ee6b3315"/>
+        <part name="pp1_31.2a"  crc="6d1e7042"/>
+        <part name="pp1_32.1a"  crc="4e97f101"/>
+        <!-- sprite scaling -->
+        <part name="pp1_27.1l"  crc="a61bff15"/>
+        <!-- Namco custom MCUs -->
+        <part name="51xx.bin"   crc="c2f57ef8"/>
+        <part name="52xx.bin"   crc="3257d11e"/>
+        <part name="53xx.bin"   crc="b326fecb"/>
+        <part name="54xx.bin"   crc="ee7357e0"/>
+        <!-- engine sound -->
+        <part name="pp1_15.6a"  crc="b5ad4d5f"/>
+        <part name="pp1_16.5a"  crc="8fdd2f6f"/>
+        <!-- voice -->
+        <part name="pp2_11.2e"  crc="5b4cf05e"/>
+        <part name="pp2_12.2f"  crc="32b694c2"/>
+        <part name="pp2_13.1e"  crc="8842138a"/>
+        <!-- PROMs -->
+        <part name="pp1-7.8l"   crc="f07ff2ad"/>
+        <part name="pp1-8.9l"   crc="adbde7d7"/>
+        <part name="pp1-9.10l"  crc="ddac786a"/>
+        <part name="pp2-10.2h"  crc="1e8d0491"/>
+        <part name="pp1-11.4d"  crc="0e4fe8a0"/>
+        <part name="pp1-15.9a"  crc="2d502464"/>
+        <part name="pp1-16.10a" crc="027aa62c"/>
+        <part name="pp1-17.11a" crc="1f8d0df3"/>
+        <part name="pp1-12.3c"  crc="7afc7cfc"/>
+        <part name="pp3-6.6m"   crc="63fb6057"/>
+        <part name="pp1-5.3b"   crc="8568decc"/>
+    </rom>
+</misterromdescription>

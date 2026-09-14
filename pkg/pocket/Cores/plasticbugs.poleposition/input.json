@@ -1,0 +1,20 @@
+{
+    "input": {
+        "magic": "APF_VER_1",
+        "controllers": [
+            {
+                "type": "default",
+                "mappings": [
+                    { "id": 60, "name": "Brake",             "key": "pad_btn_b" },
+                    { "id": 61, "name": "Accelerate",        "key": "pad_btn_a" },
+                    { "id": 62, "name": "Gear HI/LO",        "key": "pad_btn_x" },
+                    { "id": 63, "name": "Gear HI/LO (alt)",  "key": "pad_btn_y" },
+                    { "id": 64, "name": "Brake (alt)",       "key": "pad_trig_l" },
+                    { "id": 65, "name": "Accelerate (alt)",  "key": "pad_trig_r" },
+                    { "id": 66, "name": "Coin",              "key": "pad_btn_select" },
+                    { "id": 67, "name": "Coin (alt)",        "key": "pad_btn_start" }
+                ]
+            }
+        ]
+    }
+}

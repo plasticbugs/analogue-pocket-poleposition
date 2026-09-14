@@ -1,0 +1,107 @@
+# --- Pole Position project: never commit ROMs, romsets or derived ROM images ---
+/polepos/
+/polepos.zip
+*.rom
+/build/
+/ref/
+
+# MAME-derived analysis output: state dumps hold video/sprite RAM contents and
+# the snapshots are renders of ROM graphics. All of it regenerates in seconds
+# from the user's own romset with tools/capture_states.sh.
+/artifacts*/
+
+# The bootstrap methodology guide is reference-only, not part of the core
+/METHODOLOGY.md
+
+# Loose source copies of the Pocket artwork dropped at the repo root. The
+# versions that ship live in pkg/pocket/, named for the platform id.
+/polepos.bin
+/icon.bin
+
+# --- macOS ---
+.DS_Store
+**/.DS_Store
+._*
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+.fseventsd
+.DocumentRevisions-V100
+.TemporaryItems
+Icon?
+
+# --- Quartus directories and files ---
+db
+greybox_tmp
+hps_isw_handoff
+incremental_db
+output_files
+PLLJ_PLLSPE_INFO.txt
+simulation
+vip
+.qsys_edit
+*_netlist
+*_sim
+*.bak
+*.bsf
+*.cdf
+*.cmp
+*.csv
+*.done
+*.f
+*.pin
+*.pof
+*.ptf.*
+*.qar
+*.qarlog
+*.qdf
+*.qws
+*.rbf
+*.rbf_r
+*.rpt
+*.sip
+*.sld
+*.smsg
+*.sof
+*.sopc_builder
+*.sopcinfo
+*.spd
+*.summary
+build_id.mif
+build_id.v
+c5_pin_model_dump.txt
+cr_ie_info.json
+
+# --- Packaging / release staging ---
+# the SD-card zip is a build product; it belongs on a release, not in the tree
+/*-pocket-sdcard.zip
+/pkg/**/*.rom
+/pkg/**/*.zip
+/staging/*
+/release/*
+!gateware.json
+!/pkg/*
+!info.txt
+
+# --- Verilator / simulation output ---
+obj_dir/
+*.vcd
+*.fst
+a.out
+.build
+_tmp
+
+# --- Editors ---
+.vscode
+.idea
+*.suo
+*.sw?
+
+# --- Python ---
+__pycache__/
+*.pyc
+
+# Finder litter again, last: the !/pkg/* exception above would otherwise
+# re-include pkg/.DS_Store
+**/.DS_Store

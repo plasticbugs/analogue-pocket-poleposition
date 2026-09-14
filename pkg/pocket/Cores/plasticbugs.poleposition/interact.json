@@ -1,0 +1,323 @@
+{
+  "interact": {
+    "magic": "APF_VER_1",
+    "variables": [
+      {
+        "name": "Reset Core",
+        "id": 0,
+        "type": "action",
+        "enabled": true,
+        "address": "0xF0000000",
+        "value": 1
+      },
+      {
+        "name": "Service Mode",
+        "id": 1,
+        "type": "check",
+        "enabled": true,
+        "persist": false,
+        "address": "0xF0000010",
+        "defaultval": 0,
+        "mask": "0xFFFFFFFE",
+        "value": "0x00000001"
+      },
+      {
+        "name": "Screen Shape",
+        "id": 28,
+        "type": "list",
+        "enabled": true,
+        "persist": true,
+        "address": "0xF2000000",
+        "defaultval": 0,
+        "mask": "0xFFFFFFF9",
+        "options": [
+          {
+            "name": "Arcade 4:3",
+            "value": "0x00000000"
+          },
+          {
+            "name": "Fill Screen",
+            "value": "0x00000002"
+          }
+        ]
+      },
+      {
+        "name": "Cabinet Reverb",
+        "id": 47,
+        "type": "list",
+        "enabled": true,
+        "persist": true,
+        "address": "0xF2000000",
+        "defaultval": 0,
+        "mask": "0xFFFF3FFF",
+        "options": [
+          {
+            "name": "Off",
+            "value": "0x00000000"
+          },
+          {
+            "name": "Light",
+            "value": "0x00004000"
+          },
+          {
+            "name": "Medium",
+            "value": "0x00008000"
+          },
+          {
+            "name": "Heavy",
+            "value": "0x0000C000"
+          }
+        ]
+      },
+      {
+        "name": "Game Time",
+        "id": 30,
+        "type": "list",
+        "enabled": true,
+        "persist": true,
+        "address": "0xF1000000",
+        "defaultval": 0,
+        "mask": "0xFFFFFFF9",
+        "options": [
+          {
+            "name": "90 seconds",
+            "value": "0x00000000"
+          },
+          {
+            "name": "100 seconds",
+            "value": "0x00000004"
+          },
+          {
+            "name": "110 seconds",
+            "value": "0x00000002"
+          },
+          {
+            "name": "120 seconds",
+            "value": "0x00000006"
+          }
+        ]
+      },
+      {
+        "name": "Racing Laps",
+        "id": 31,
+        "type": "list",
+        "enabled": true,
+        "persist": true,
+        "address": "0xF1000000",
+        "defaultval": 0,
+        "mask": "0xFFFFFFFE",
+        "options": [
+          {
+            "name": "3",
+            "value": "0x00000000"
+          },
+          {
+            "name": "4",
+            "value": "0x00000001"
+          }
+        ]
+      },
+      {
+        "name": "Coin A",
+        "id": 32,
+        "type": "list",
+        "enabled": true,
+        "persist": true,
+        "address": "0xF1000000",
+        "defaultval": 0,
+        "mask": "0xFFFFFF1F",
+        "options": [
+          {
+            "name": "1 coin 1 credit",
+            "value": "0x00000000"
+          },
+          {
+            "name": "3 coins 1 credit",
+            "value": "0x00000020"
+          },
+          {
+            "name": "2 coins 1 credit",
+            "value": "0x000000C0"
+          },
+          {
+            "name": "3 coins 2 credits",
+            "value": "0x000000A0"
+          },
+          {
+            "name": "4 coins 3 credits",
+            "value": "0x00000060"
+          },
+          {
+            "name": "1 coin 2 credits",
+            "value": "0x00000080"
+          },
+          {
+            "name": "1 coin 3 credits",
+            "value": "0x00000040"
+          },
+          {
+            "name": "Free play",
+            "value": "0x000000E0"
+          }
+        ]
+      },
+      {
+        "name": "Coin B",
+        "id": 33,
+        "type": "list",
+        "enabled": true,
+        "persist": true,
+        "address": "0xF1000000",
+        "defaultval": 0,
+        "mask": "0xFFFFFFE7",
+        "options": [
+          {
+            "name": "1 coin 1 credit",
+            "value": "0x00000000"
+          },
+          {
+            "name": "2 coins 1 credit",
+            "value": "0x00000010"
+          },
+          {
+            "name": "3 coins 2 credits",
+            "value": "0x00000008"
+          },
+          {
+            "name": "4 coins 3 credits",
+            "value": "0x00000018"
+          }
+        ]
+      },
+      {
+        "name": "Practice Rank",
+        "id": 34,
+        "type": "list",
+        "enabled": true,
+        "persist": true,
+        "address": "0xF1000000",
+        "defaultval": 0,
+        "mask": "0xFFFF1FFF",
+        "options": [
+          {
+            "name": "B (factory)",
+            "value": "0x00000000"
+          },
+          {
+            "name": "A",
+            "value": "0x00008000"
+          },
+          {
+            "name": "C",
+            "value": "0x0000C000"
+          },
+          {
+            "name": "D",
+            "value": "0x00004000"
+          },
+          {
+            "name": "E",
+            "value": "0x0000A000"
+          },
+          {
+            "name": "F",
+            "value": "0x00002000"
+          },
+          {
+            "name": "G",
+            "value": "0x0000E000"
+          },
+          {
+            "name": "H",
+            "value": "0x00006000"
+          }
+        ]
+      },
+      {
+        "name": "Extended Rank",
+        "id": 35,
+        "type": "list",
+        "enabled": true,
+        "persist": true,
+        "address": "0xF1000000",
+        "defaultval": 0,
+        "mask": "0xFFFFE3FF",
+        "options": [
+          {
+            "name": "C (factory)",
+            "value": "0x00000000"
+          },
+          {
+            "name": "A",
+            "value": "0x00000800"
+          },
+          {
+            "name": "B",
+            "value": "0x00001800"
+          },
+          {
+            "name": "D",
+            "value": "0x00001000"
+          },
+          {
+            "name": "E",
+            "value": "0x00000C00"
+          },
+          {
+            "name": "F",
+            "value": "0x00001C00"
+          },
+          {
+            "name": "G",
+            "value": "0x00000400"
+          },
+          {
+            "name": "H",
+            "value": "0x00001400"
+          }
+        ]
+      },
+      {
+        "name": "Speed Unit",
+        "id": 36,
+        "type": "list",
+        "enabled": true,
+        "persist": true,
+        "address": "0xF1000000",
+        "defaultval": 0,
+        "mask": "0xFFFFFDFF",
+        "options": [
+          {
+            "name": "mph",
+            "value": "0x00000000"
+          },
+          {
+            "name": "km/h",
+            "value": "0x00000200"
+          }
+        ]
+      },
+      {
+        "name": "Demo Sounds",
+        "id": 37,
+        "type": "list",
+        "enabled": true,
+        "persist": true,
+        "address": "0xF1000000",
+        "defaultval": 0,
+        "mask": "0xFFFFFEFF",
+        "options": [
+          {
+            "name": "On",
+            "value": "0x00000000"
+          },
+          {
+            "name": "Off",
+            "value": "0x00000100"
+          }
+        ]
+      }
+    ],
+    "messages": []
+  }
+}

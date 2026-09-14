@@ -1,0 +1,26 @@
+# ==============================================================================
+# Pole Position core RTL
+# ==============================================================================
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "mb88.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "namco_06xx.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "namco_customs.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "polepos_core.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "pp_biquad.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "pp_discrete.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "pp_engine.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "pp_ram.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "pp_reverb.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "pp_shared.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "pp_sound.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "pp_video.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "pp_wsg.sv"]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "z8002.sv"]
+set_global_assignment -name VERILOG_FILE       [file join $::quartus(qip_path) "tv80s_cen.v"]
+set_global_assignment -name SEARCH_PATH        [file join $::quartus(qip_path) "."]
+
+# tv80 Z80 (MIT, https://github.com/hutch31/tv80) -- the same source the
+# Verilator benches use, so what is verified is what is synthesised.
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../modules/cpu-tv80/tv80_core.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../modules/cpu-tv80/tv80_alu.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../modules/cpu-tv80/tv80_mcode.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "../modules/cpu-tv80/tv80_reg.v"]
