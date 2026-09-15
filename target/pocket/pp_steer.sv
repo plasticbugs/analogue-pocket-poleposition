@@ -10,11 +10,14 @@
 //           (about half a second) -- Medium (b = 2) is the feel the core
 //           shipped with
 //   stick   in proportion to deflection past the framework's dead zone, up to
-//           2b counts a frame at full lock, carrying fractions of a count
-//           between frames so a light touch still turns the wheel slowly
+//           1, 3.5 or 6 counts a frame at full lock (Low, Medium, High),
+//           carrying fractions of a count between frames so a light touch
+//           still turns the wheel slowly. Low is deliberately gentle; Medium
+//           splits the difference between it and High.
 //
-// Sensitivity picks b: Low 1, Medium 2, High 3. The menu stores Medium as 0,
-// so the core steers at Medium before the Pocket has written its settings.
+// Sensitivity picks b for the D-pad: Low 1, Medium 2, High 3. The menu stores
+// Medium as 0, so the core steers at Medium before the Pocket has written its
+// settings.
 //
 // The framework reports a stick past its dead zone as a D-pad press
 // (stick_active) and folds that into its merged directions, so the stick path
@@ -48,14 +51,18 @@ module pp_steer (
     logic        m_right;
     logic [6:0]  eff;                               // deflection past the dead zone, 0..111
     logic [10:0] add;                               // 1/256 counts per frame, up to 1540
+    // full-lock rate in 1/16ths of a count per 111 steps of deflection:
+    // counts/frame = eff * k / 16 / 256, so k = rate * 256 * 16 / 111
+    wire [7:0] k = (sens == 2'd1) ? 8'd37 :         // Low     1.0
+                   (sens == 2'd0) ? 8'd129 :        // Medium  3.5
+                                    8'd222;         // High    6.0
     always_ff @(posedge clk) begin
         ml <= mag(stick_lx);
         mr <= mag(stick_rx);
         m       <= (ml >= mr) ? ml : mr;
         m_right <= (ml >= mr) ? stick_lx[7] : stick_rx[7];
         eff <= (m > {1'b0, DEADZONE}) ? ((m > 8'd127) ? 7'd111 : 7'(m - {1'b0, DEADZONE})) : 7'd0;
-        // eff / 111 of 2b counts, in 1/256ths: eff * b * 256 * 2 / 111 ~ eff * b * 37 / 8
-        add <= 11'((14'(eff) * 14'(b) * 14'd37) >> 3);
+        add <= 11'((15'(eff) * 15'(k)) >> 4);
     end
 
     logic [5:0] held;

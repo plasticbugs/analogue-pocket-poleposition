@@ -160,6 +160,12 @@ module pp_sound (
     //   6..21   CHANL c x volume steps to speaker k        -> rsum[k]
     //   22..25  rsum[k] >>> 8 x GAIN_ROUTE8                -> spk[k]
     localparam logic [4:0] ST_LAST = 5'd25;
+    // The explosion (54xx CHANL2) is routed 12 dB above GAIN_ROUTE's estimate,
+    // the tyre squeal (CHANL1) and voice (CHANL4) at it. The board's level for
+    // each channel into the 4051 is unmeasured; at the estimate the explosion
+    // played ~20 dB under MAME and under the engine, and in play it wanted to
+    // be heard. Shift, not a gain: CHANL2 is at most 2 V, so x4 stays in range.
+    localparam int CHANL2_BOOST = 2;
     logic [4:0] mix_step, mix_step_d;
     logic       mix_run, mix_v;
     logic [1:0] post;                      // 1: fold, 2: output
@@ -193,7 +199,8 @@ module pp_sound (
             mix_a = disc_s;
             mix_b = mame_mix ? GAIN_DISC : 32'sd0;
         end else if (mix_step <= 5'd21) begin
-            mix_a = chanl[ridx[1:0]];
+            // CHANL2 (the explosion) at x4: see CHANL2_BOOST above
+            mix_a = (ridx[1:0] == 2'd1) ? (chanl[1] <<< CHANL2_BOOST) : chanl[ridx[1:0]];
             mix_b = mame_mix ? 32'sd0 : $signed({25'd0, rvol});
         end else begin
             mix_a = 32'(rsum[rk] >>> 8);

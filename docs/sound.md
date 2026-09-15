@@ -121,16 +121,26 @@ speakers from boot, both switch to CHANL4 for "prepare to qualify" and back,
 and CHANL3 is never selected. The service-mode sound test measures the result
 (`tools/sound/sound_levels.py`, DC-removed RMS of the left output):
 
-| test sound | MAME | core, MAME routing | core, board routing |
-|---|---|---|---|
-| 1-16 (WSG) | 27-1,183, peaks to 3,243 | 27-1,177 | identical |
-| 17 (54xx) | 11,158, peak 28,811 | 11,115 | 1,097, peak 2,799 |
-| 18 (54xx: tyre squeal) | 11,031, peak 32,187 | 11,452 | 1,118, peak 3,339 |
-| 19, 20 (52xx: voice) | 4,143 / 3,384 | 3,744 / 3,232 | 612 / 631, peaks 3,546 / 3,272 |
+| test sound | channel | MAME | core, MAME routing | core, board routing | core as shipped (explosion +12 dB) |
+|---|---|---|---|---|---|
+| 1-16 (WSG) | | 27-1,183, peaks to 3,243 | 27-1,177 | identical | identical |
+| 17 (54xx: explosion) | CHANL2 | 11,158, peak 28,811 | 11,115 | 1,097, peak 2,799 | 4,344, peak 11,180 |
+| 18 (54xx: tyre squeal) | CHANL1 | 11,031, peak 32,187 | 11,452 | 1,118, peak 3,339 | squeal unchanged (1,148 over 41.2-42.2 s); the window's first half second carries the explosion's tail |
+| 19, 20 (52xx: voice) | CHANL4 | 4,143 / 3,384 | 3,744 / 3,232 | 612 / 631, peaks 3,546 / 3,272 | unchanged |
+
+Which channel each sound uses comes from the core itself: `tb_system` with
+`PP_CHANLOG=1` prints each channel's RMS every 60 frames. CHANL3 is silent
+throughout the test and the game never routes it.
 
 MAME's routing puts the squeal about 20 dB above every other sound on the
 board and 15 dB above the engine, which is what made it painful in play. With
 the board's routing it lands level with the loudest WSG sounds, peak for peak.
+
+The same estimate left the explosion 20 dB under MAME and under the engine,
+and in play it was too quiet to land. The board's level for each channel into
+the 4051 was never measured, so CHANL2 is routed 12 dB above the estimate
+(`CHANL2_BOOST` in `pp_sound.sv`, matched in the reference model): peaks of
+about 11,000 against the engine's 8,000, and the squeal where it was.
 In the scripted race (`tb_system -script play`) the same holds: the 54xx burst
 at 5-7 s goes from 11,100 to 1,080 RMS, the voice at 15 s from 4,040 to 760,
 and every second without them (music, engine) is unchanged.
@@ -227,9 +237,9 @@ build/sim_disc/tb_disc 20000 60                                # discrete alone
 
 | bench | result |
 |---|---|
-| whole board, 40,000 samples, nibbles changing every ~60 samples, board routing | max 1.18 LSB, RMS 0.30 LSB |
-| the same, nibbles every ~5 | max 2.17 LSB, RMS 0.30 LSB |
-| the same, MAME routing | max 1.59 LSB, RMS 0.29 LSB |
+| whole board, 40,000 samples, nibbles changing every ~60 samples, board routing | max 1.20 LSB, RMS 0.30 LSB |
+| the same, nibbles every ~5 | max 5.56 LSB, RMS 0.33 LSB (the clipping residue below, x4 on CHANL2) |
+| the same, MAME routing (20,000 samples) | max 1.74 LSB, RMS 0.30 LSB |
 | RTL in one routing, model in the other (mutation check) | max 45,312 LSB: the bench sees the routing |
 | whole board, nibbles every ~400 | max 1.03 LSB, RMS 0.31 LSB |
 | whole board, nibbles every ~4000 | max 2.21 LSB, RMS 0.50 LSB |

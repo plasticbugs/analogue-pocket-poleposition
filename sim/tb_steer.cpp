@@ -2,8 +2,9 @@
 //
 //   D-pad at Medium turns exactly as the core's original steering did (2 counts
 //   a frame, 4 once held 32 frames), Low and High at half and 1.5x that;
-//   the stick turns in proportion to deflection, up to the D-pad's held rate,
-//   either direction, from either stick, and not at all inside the dead zone.
+//   the stick turns in proportion to deflection, up to 1 / 3.5 / 6 counts a
+//   frame at Low / Medium / High, either direction, from either stick, and not
+//   at all inside the dead zone.
 //
 //   sim/run_steer.sh
 #include "Vpp_steer.h"
@@ -90,13 +91,15 @@ int main(int argc, char **argv) {
     // ---- stick: proportional rate, averaged over 600 frames
     struct Case { int sens; int lx, rx; double want; const char *name; };
     const Case cases[] = {
-        {0, 0xFF, 0x80,  4.0, "Medium, left stick full right"},
-        {0, 0x00, 0x80, -4.0, "Medium, left stick full left"},
-        {1, 0xFF, 0x80,  2.0, "Low, full right"},
+        {0, 0xFF, 0x80,  3.5, "Medium, left stick full right"},
+        {0, 0x00, 0x80, -3.5, "Medium, left stick full left"},
+        {1, 0xFF, 0x80,  1.0, "Low, full right"},
         {2, 0xFF, 0x80,  6.0, "High, full right"},
-        {0, 0x80 + 16 + 55, 0x80, 4.0 * 55 / 111, "Medium, half way past the dead zone"},
-        {0, 0x80 + 16 + 5,  0x80, 4.0 * 5 / 111,  "Medium, just past the dead zone"},
-        {0, 0x80, 0x00, -4.0, "Medium, right stick full left"},
+        {3, 0xFF, 0x80,  6.0, "sens 3 (as High), full right"},
+        {1, 0x80 + 16 + 55, 0x80, 1.0 * 55 / 111, "Low, half way past the dead zone"},
+        {0, 0x80 + 16 + 55, 0x80, 3.5 * 55 / 111, "Medium, half way past the dead zone"},
+        {0, 0x80 + 16 + 5,  0x80, 3.5 * 5 / 111,  "Medium, just past the dead zone"},
+        {0, 0x80, 0x00, -3.5, "Medium, right stick full left"},
         {0, 0x80 + 10, 0x80, 0.0, "inside the dead zone"},
     };
     for (const Case &c : cases) {

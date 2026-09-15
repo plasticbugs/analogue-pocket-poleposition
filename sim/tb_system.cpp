@@ -20,6 +20,8 @@
 #include "verilated.h"
 #include <algorithm>
 #include <cstdio>
+#include <cmath>
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -168,6 +170,26 @@ int main(int argc, char **argv) {
     while (frame < frames && guard++ < 4000000000LL) {
         tick();
         if (wav_path && top->audio_ce) { wav.push_back((int16_t)top->audio_l); wav.push_back((int16_t)top->audio_r); }
+        // PP_CHANLOG=1: RMS of each discrete channel (CHANL1..4, volts, DC
+        // removed) and which voices route it, once every 60 frames
+        static const bool chanlog = getenv("PP_CHANLOG") != nullptr;
+        if (chanlog && top->audio_ce) {
+            static double s1[4], s2[4]; static long n = 0; static int last_frame = -1;
+            auto *m = top->rootp->polepos_core;
+            const int32_t c[4] = {(int32_t)m->u_sound__DOT__u_discrete__DOT__chanl1, (int32_t)m->u_sound__DOT__u_discrete__DOT__chanl2,
+                                  (int32_t)m->u_sound__DOT__u_discrete__DOT__chanl3, (int32_t)m->u_sound__DOT__u_discrete__DOT__chanl4};
+            for (int k = 0; k < 4; k++) { double v = c[k] / 67108864.0; s1[k] += v; s2[k] += v * v; }
+            n++;
+            if (frame % 60 == 0 && frame != last_frame && n > 0) {
+                last_frame = frame;
+                printf("chanl frame %d rms", frame);
+                for (int k = 0; k < 4; k++) { double mu = s1[k] / n; printf(" %.3f", std::sqrt(std::max(0.0, s2[k] / n - mu * mu))); s1[k] = s2[k] = 0; }
+                printf(" | sel");
+                for (int v = 0; v < 8; v++) { unsigned sel = m->u_sound__DOT__u_wsg__DOT__regs[v * 4 + 0x23]; if (sel & 8) printf(" v%d:C%u", v, (sel & 3) + 1); }
+                printf("\n");
+                n = 0;
+            }
+        }
         if (events && frame < evto) {
             auto *m = top->rootp->polepos_core;
             double lines = (cycles - t0) / 3072.0;

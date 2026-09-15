@@ -220,7 +220,8 @@ struct Machine {
                 if (!(sel & 8)) continue;
                 const int vol[4] = {wsg.regs[ch * 4 + 0x03] >> 4, wsg.regs[ch * 4 + 0x03] & 0x0f,
                                     sel >> 4, wsg.regs[ch * 4 + 0x02] >> 4};
-                for (int k = 0; k < 4; k++) routed[k] += d[sel & 3] * vol[k];
+                const double boost = ((sel & 3) == 1) ? 4.0 : 1.0;   // CHANL2, pp_sound's CHANL2_BOOST
+                for (int k = 0; k < 4; k++) routed[k] += d[sel & 3] * vol[k] * boost;
             }
         }
         for (int c = 0; c < 4; c++)

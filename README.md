@@ -56,7 +56,8 @@ The cabinet's wheel is an optical encoder — the game responds to how fast it
 turns — so the D-pad turns it at a steady rate that doubles after half a second
 held, and an analog stick turns it faster the further it is pushed.
 **Steering Sensitivity** (Low, Medium, High) scales both; Medium is the
-default.
+default. On a stick, Low is deliberately gentle and Medium sits half way
+between it and High.
 
 DIP switches — game time, laps, coinage, practice and extended rank, mph or
 km/h, demo sounds — and service mode are in the Pocket's Interact menu, along
@@ -71,9 +72,10 @@ edge to edge and top to bottom.
 ## Sound
 
 All four cabinet speaker channels are generated and folded to stereo (front
-and rear of each side averaged). The tyre squeal, crash and voice are mixed the
+and rear of each side averaged). The tyre squeal, explosion and voice are mixed the
 way the board mixes them — through the wave synthesiser's volume controls —
-rather than the way MAME does, which plays them about 20 dB too loud; see
+rather than the way MAME does, which plays them about 20 dB too loud. The
+explosion is set 12 dB above that estimate so it cuts through the engine; see
 `docs/sound.md`.
 
 **Cabinet Reverb** (Off, Light, Medium, Heavy) puts the sound back in a

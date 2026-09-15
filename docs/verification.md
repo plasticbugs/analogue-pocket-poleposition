@@ -170,14 +170,14 @@ Quartus 18.1, 5CEBA4F23C8, full compile of the Pocket core:
 
 | resource | used | available |
 |---|---|---|
-| Logic (ALMs) | 17,894 | 18,480 (97%) |
-| Registers | 10,773 | |
+| Logic (ALMs) | 18,025 | 18,480 (98%) |
+| Registers | 10,792 | |
 | Block memory | 1,894,308 bits | 3,153,920 (60%) |
 | RAM blocks | 250 | 308 (81%) |
-| DSP blocks | 35 | 66 (53%) |
+| DSP blocks | 34 | 66 (52%) |
 
-Timing closes on every clock and corner: worst setup slack +0.924 ns on the
-49.152 MHz system clock (slow 85C), worst hold +0.118 ns. The first compile
+Timing closes on every clock and corner: worst setup slack +0.624 ns on the
+49.152 MHz system clock (slow 85C), worst hold +0.110 ns. The first compile
 missed by 1.04 ns; the three Z8002 paths responsible and their fixes are in
 `docs/z8002.md` §6, each re-verified in lockstep with MAME before recompiling.
 
@@ -216,15 +216,15 @@ controller's analog stick; the bench holds it to:
 |---|---|
 | D-pad at Medium, 4,000 frames of random presses and holds | identical, frame by frame, to the steering the core first shipped with |
 | D-pad Low / Medium / High: counts in the first 32 frames held, then per 10 frames | 32/20, 64/40, 96/60 (1, 2, 3 a frame, doubling after half a second) |
-| stick at full lock, Low / Medium / High | 2.003 / 4.007 / 6.015 counts a frame (want 2, 4, 6) |
-| stick half way and just past the dead zone, Medium | 1.985 and 0.180 counts a frame (want 1.982 and 0.180) |
-| stick full left; right stick; inside the dead zone | -4.007; -4.007; 0 |
+| stick at full lock, Low / Medium / High | 1.000 / 3.493 / 6.015 counts a frame (want 1, 3.5, 6: Low gentle, Medium half way to High) |
+| stick half way past the dead zone, Low / Medium; just past it, Medium | 0.497 / 1.732; 0.157 counts a frame (want 0.495 / 1.734; 0.158) |
+| stick full left; right stick; inside the dead zone | -3.493; -3.493; 0 |
 
 Whether the machine keeps up with the fastest setting: the 53xx consumes one
 unit of wheel movement per poll, so a wheel turned faster than it polls would
 leave a backlog that keeps steering after release. `tb_system -script steer`
-(with `PP_STEERLOG=1`) turns the wheel at 6 counts a frame for two seconds, then
-4, then 2, mid-race: the encoder's backlog is zero at the end of every one of
+(with `PP_STEERLOG=1`) turns the wheel at 6 counts a frame (the fastest the pad
+or stick can) for two seconds, then 4, then 2, mid-race: the encoder's backlog is zero at the end of every one of
 the 1,420 frames.
 
 ## 8. What still needs a Pocket

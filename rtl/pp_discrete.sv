@@ -24,10 +24,10 @@ module pp_discrete (
     input  wire  [3:0] n52,            //! NAMCO_52XX_P_DATA
 
     output logic signed [31:0] out,    //! Q26: sum of the four channel nodes
-    output logic signed [31:0] chanl1, //! Q26: the four channel nodes, valid with out
-    output logic signed [31:0] chanl2,
-    output logic signed [31:0] chanl3,
-    output logic signed [31:0] chanl4,
+    output logic signed [31:0] chanl1 /* verilator public_flat_rd */, //! Q26: the four channel nodes, valid with out
+    output logic signed [31:0] chanl2 /* verilator public_flat_rd */,
+    output logic signed [31:0] chanl3 /* verilator public_flat_rd */,
+    output logic signed [31:0] chanl4 /* verilator public_flat_rd */,
     output logic       out_valid,
     output wire [159:0] dbg_y          //! the five raw section outputs
 );
